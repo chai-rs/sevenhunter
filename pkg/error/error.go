@@ -2,6 +2,10 @@ package errx
 
 import "errors"
 
+var (
+	InternalServerError = M(500, "internal server error")
+)
+
 type Error struct {
 	Code     int    `json:"code"`
 	Message  string `json:"message"`
