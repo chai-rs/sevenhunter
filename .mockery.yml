@@ -1,0 +1,9 @@
+dir: '{{.InterfaceDir}}/mocks'
+structname: 'Mock{{.InterfaceName}}'
+filename: '{{.InterfaceName | snakecase}}.go'
+pkgname: mocks
+
+packages:
+  github.com/chai-rs/sevenhunter/internal/model:
+    interfaces:
+      UserRepo:
