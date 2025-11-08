@@ -2,11 +2,9 @@
 
 const config = {
   mongodb: {
-    url: "mongodb://admin:admin@localhost:27017",
+    url: process.env.MONGO_URI || "mongodb://admin:admin@localhost:27017",
     databaseName: "sevenhunter",
-
-    options: {
-    }
+    options: {}
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.

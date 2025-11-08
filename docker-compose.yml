@@ -14,6 +14,45 @@ services:
       - mongodb_config:/data/configdb
     networks:
       - sevenhunter-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-migrate:
+    build:
+      context: .
+      dockerfile: docker/Migration.Dockerfile
+    container_name: sevenhunter-mongo-migrate
+    environment:
+      - MONGO_URL=mongodb://admin:admin@mongodb:27017
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - sevenhunter-network
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: sevenhunter-api
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      - AUTH_SECRET=${AUTH_SECRET:-your_secret_key}
+      - AUTH_ACCESS_TOKEN_TTL=${AUTH_ACCESS_TOKEN_TTL:-15m}
+      - AUTH_REFRESH_TOKEN_TTL=${AUTH_REFRESH_TOKEN_TTL:-168h}
+      - MONGO_URI=mongodb://admin:admin@mongodb:27017/
+    depends_on:
+      mongo-migrate:
+        condition: service_completed_successfully
+      mongodb:
+        condition: service_healthy
+    networks:
+      - sevenhunter-network
 
   mongo-express:
     image: mongo-express:latest
@@ -28,7 +67,8 @@ services:
     ports:
       - '8081:8081'
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - sevenhunter-network
 
