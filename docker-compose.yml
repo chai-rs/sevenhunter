@@ -26,7 +26,7 @@ services:
       dockerfile: docker/Migration.Dockerfile
     container_name: sevenhunter-mongo-migrate
     environment:
-      - MONGO_URL=mongodb://admin:admin@mongodb:27017
+      - MONGO_URI=mongodb://admin:admin@mongodb:27017
     depends_on:
       mongodb:
         condition: service_healthy
