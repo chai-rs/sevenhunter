@@ -39,7 +39,8 @@ type UserRepo struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepo(db *mongo.Database, collectionName string) *UserRepo {
+func NewUserRepo(db *mongo.Database) *UserRepo {
+	collectionName := "users"
 	return &UserRepo{
 		collection: db.Collection(collectionName),
 	}

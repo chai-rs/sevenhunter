@@ -1,7 +1,11 @@
 package config
 
-import "github.com/chai-rs/sevenhunter/pkg/jwt"
+import (
+	"github.com/chai-rs/sevenhunter/pkg/jwt"
+	"github.com/chai-rs/sevenhunter/pkg/mongo"
+)
 
 type Config struct {
-	Auth *jwt.TokenManagerConfig `required:"true"`
+	Mongo *mongo.Config           `required:"true"`
+	Auth  *jwt.TokenManagerConfig `required:"true"`
 }

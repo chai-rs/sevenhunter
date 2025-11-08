@@ -1,2 +1,0 @@
-// Drop users collection and all its indexes
-db.users.drop();
