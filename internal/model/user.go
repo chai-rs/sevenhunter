@@ -44,7 +44,7 @@ func NewUser(opts UserOpts) (*User, error) {
 
 func (u *User) Validate(newUser ...bool) error {
 	rules := []*v.FieldRules{
-		v.Field(&u.name, v.Required, v.Length(2, 100)),
+		v.Field(&u.name, v.Required, v.Length(2, 32)),
 		v.Field(&u.email, v.Required, v.Length(5, 200), is.Email),
 		v.Field(&u.hashedPassword, v.Required),
 		v.Field(&u.createdAt, v.Required),
