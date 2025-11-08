@@ -1,3 +1,7 @@
 package config
 
-type Config struct{}
+import "github.com/chai-rs/sevenhunter/pkg/jwt"
+
+type Config struct {
+	Auth *jwt.TokenManagerConfig `required:"true"`
+}
