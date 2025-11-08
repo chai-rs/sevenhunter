@@ -38,7 +38,7 @@ func (tm *TokenManager) VerifyToken(tokenStr string) (*jwt.Token, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, errx.E(http.StatusUnauthorized, err, "unauthorized")
 	}
 
 	if token.Valid {

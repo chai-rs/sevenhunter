@@ -15,6 +15,8 @@ import (
 const DefaultAddr = ":8080"
 
 func Start(app *fiber.App, addrs ...string) error {
+	app.Use(notfound)
+
 	addr := DefaultAddr
 	if len(addrs) > 0 {
 		addr = addrs[0]
@@ -44,4 +46,8 @@ func Start(app *fiber.App, addrs ...string) error {
 
 	logx.Info().Msg("application stopped")
 	return nil
+}
+
+func notfound(c *fiber.Ctx) error {
+	return c.Status(http.StatusNotFound).JSON(Response{Success: false, Message: "method not found"})
 }

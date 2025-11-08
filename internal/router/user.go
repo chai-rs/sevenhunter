@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/chai-rs/sevenhunter/internal/handler"
+	"github.com/chai-rs/sevenhunter/internal/middleware"
 	"github.com/chai-rs/sevenhunter/internal/repo"
 	"github.com/chai-rs/sevenhunter/internal/service"
 	"github.com/chai-rs/sevenhunter/pkg/jwt"
@@ -22,6 +23,7 @@ func BindUser(group fiber.Router, opts BindUserOpts) {
 	})
 
 	router := group.Group("/users")
+	router.Use(middleware.Auth(opts.TokenManager))
 	router.Get("", hdl.List)
 	router.Get("/count", hdl.Count)
 	router.Get("/profile", hdl.Get)

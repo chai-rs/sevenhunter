@@ -25,8 +25,8 @@ func NewUserHandler(opts UserHandlerOpts) *UserHandler {
 }
 
 func (h *UserHandler) getUserID(c *fiber.Ctx) (string, error) {
-	userID := c.Locals("user_id", "").(string)
-	if userID == "" {
+	userID, ok := c.Locals("user_id").(string)
+	if !ok || userID == "" {
 		return "", errx.M(http.StatusUnauthorized, "unauthorized")
 	}
 
