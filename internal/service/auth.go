@@ -101,7 +101,7 @@ func (s *AuthService) Login(ctx context.Context, opts model.LoginOpts) (*model.A
 	}, nil
 }
 
-func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*model.AuthResult, error) {
+func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*model.AuthResult, error) {
 	token, err := s.tokenManager.VerifyToken(refreshToken)
 	if err != nil {
 		return nil, err

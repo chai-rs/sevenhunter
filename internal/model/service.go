@@ -5,7 +5,7 @@ import "context"
 type AuthService interface {
 	Register(ctx context.Context, opts RegisterOpts) (*AuthResult, error)
 	Login(ctx context.Context, opts LoginOpts) (*AuthResult, error)
-	Refresh(ctx context.Context, refreshToken string) (*AuthResult, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*AuthResult, error)
 }
 
 type UserService interface {

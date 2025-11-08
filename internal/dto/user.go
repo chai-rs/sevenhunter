@@ -13,6 +13,10 @@ type UserResp struct {
 }
 
 func NewUserResp(m *model.User) *UserResp {
+	if m == nil {
+		return nil
+	}
+
 	return &UserResp{
 		ID:        m.ID(),
 		Name:      m.Email(),
