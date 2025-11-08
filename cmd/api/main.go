@@ -8,7 +8,10 @@ import (
 	fx "github.com/chai-rs/sevenhunter/pkg/fiber"
 	logx "github.com/chai-rs/sevenhunter/pkg/logger"
 	_ "github.com/chai-rs/sevenhunter/pkg/logger/autoload"
+	"github.com/gofiber/contrib/fiberzerolog"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/samber/lo"
 )
 
 var (
@@ -30,6 +33,12 @@ func main() {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: fx.ErrorHandler,
 	})
+
+	// Common middlewares
+	app.Use(cors.New())
+	app.Use(fiberzerolog.New(fiberzerolog.Config{
+		Logger: lo.ToPtr(logx.ConsoleWriter()),
+	}))
 
 	// Bind API routes
 	bindAPI(app)
