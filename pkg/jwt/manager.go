@@ -41,6 +41,22 @@ func (tm *TokenManager) VerifyToken(tokenStr string) (*jwt.Token, error) {
 		return nil, errx.E(http.StatusUnauthorized, err, "unauthorized")
 	}
 
+	if !token.Valid {
+		return nil, errx.M(http.StatusUnauthorized, "unauthorized")
+	}
+
+	return token, nil
+}
+
+func (tm *TokenManager) VerifyTokenWithClaims(tokenStr string, claims jwt.Claims) (*jwt.Token, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (any, error) {
+		return []byte(tm.config.Secret), nil
+	})
+
+	if err != nil {
+		return nil, errx.E(http.StatusUnauthorized, err, "unauthorized")
+	}
+
 	if token.Valid {
 		return token, nil
 	}

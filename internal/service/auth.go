@@ -102,15 +102,15 @@ func (s *AuthService) Login(ctx context.Context, opts model.LoginOpts) (*model.A
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*model.AuthResult, error) {
-	token, err := s.tokenManager.VerifyToken(refreshToken)
+	claims := &model.RefreshTokenClaims{}
+	token, err := s.tokenManager.VerifyTokenWithClaims(refreshToken, claims)
 	if err != nil {
 		return nil, err
 	}
 
-	claims, ok := token.Claims.(*model.RefreshTokenClaims)
-	if !ok {
-		logx.Error().Msg("invalid refresh token claims")
-		return nil, errx.M(http.StatusUnauthorized, "invalid refresh token claims")
+	if !token.Valid {
+		logx.Error().Msg("invalid refresh token")
+		return nil, errx.M(http.StatusUnauthorized, "invalid refresh token")
 	}
 
 	user, err := s.userRepo.FindByID(ctx, claims.Subject)
