@@ -47,8 +47,8 @@ func NewUserRepo(db *mongo.Database, collectionName string) *UserRepo {
 
 var _ model.UserRepo = (*UserRepo)(nil)
 
-func (r *UserRepo) Count() (int64, error) {
-	count, err := r.collection.CountDocuments(context.Background(), bson.M{})
+func (r *UserRepo) Count(ctx context.Context) (int64, error) {
+	count, err := r.collection.CountDocuments(ctx, bson.M{})
 	if err != nil {
 		return 0, errx.Mongo(err)
 	}

@@ -30,6 +30,8 @@ func NewAuthService(opts *AuthServiceOpts) *AuthService {
 	}
 }
 
+var _ model.AuthService = (*AuthService)(nil)
+
 func (s *AuthService) Register(ctx context.Context, opts model.RegisterOpts) (*model.AuthResult, error) {
 	exist, _ := s.userRepo.FindByEmail(ctx, opts.Email)
 	if exist != nil {

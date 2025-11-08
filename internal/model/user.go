@@ -85,6 +85,23 @@ func (u *User) CreatedAt() time.Time {
 	return u.createdAt
 }
 
+type UpdateUserOpts struct {
+	ID    string
+	Name  string
+	Email string
+}
+
+func (s *User) Update(opts UpdateUserOpts) error {
+	s.email = opts.Email
+	s.name = opts.Name
+
+	if err := s.Validate(); err != nil {
+		return errx.E(http.StatusBadRequest, err)
+	}
+
+	return nil
+}
+
 type CreateUserOpts struct {
 	Name     string
 	Email    string

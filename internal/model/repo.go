@@ -3,7 +3,7 @@ package model
 import "context"
 
 type UserRepo interface {
-	Count() (int64, error)
+	Count(ctx context.Context) (int64, error)
 	List(ctx context.Context, opts ListUserOpts) ([]User, error)
 	Create(ctx context.Context, user *User) (*User, error)
 	FindByID(ctx context.Context, id string) (*User, error)
