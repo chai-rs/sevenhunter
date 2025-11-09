@@ -10,11 +10,13 @@ import (
 
 	logx "github.com/chai-rs/sevenhunter/pkg/logger"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 )
 
 const DefaultAddr = ":8080"
 
 func Start(app *fiber.App, addrs ...string) error {
+	app.Use(healthcheck.New())
 	app.Use(notfound)
 
 	addr := DefaultAddr
