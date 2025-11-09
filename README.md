@@ -30,6 +30,9 @@ The API provides:
 
 ## API Features
 
+### Healthcheck Endpoints
+- `POST /livez` - Check if the API server is running and responsive
+
 ### Authentication Endpoints
 - `POST /v1/api/auth/register` - Create a new user account
 - `POST /v1/api/auth/login` - Authenticate and receive tokens
