@@ -9,7 +9,8 @@ import (
 )
 
 type Config struct {
-	URI string
+	Database string `split_words:"true" required:"true"`
+	URI      string `envconfig:"URI" required:"true"`
 }
 
 func (conf *Config) New(ctx context.Context) (*mongo.Client, error) {
@@ -32,4 +33,12 @@ func (conf *Config) MustNew(ctx context.Context) *mongo.Client {
 		logx.Panic().Err(err).Msg("failed to initialize mongo client")
 	}
 	return client
+}
+
+func (conf *Config) MustDatabase() *mongo.Database {
+	client, err := conf.New(context.Background())
+	if err != nil {
+		logx.Panic().Err(err).Msg("failed to initialize mongo client")
+	}
+	return client.Database(conf.Database)
 }

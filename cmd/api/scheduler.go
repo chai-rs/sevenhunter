@@ -24,7 +24,7 @@ func startScheduler() (shutdown func() error) {
 
 func bindUserCountScheduler(sch gocron.Scheduler) {
 	userCountSchduler := scheduler.NewUserCountScheduler(scheduler.UserCountSchedulerOpts{
-		UserRepo: repo.NewUserRepo(registry.MongoDB.Database("sevenhunter")),
+		UserRepo: repo.NewUserRepo(registry.MongoDB),
 	})
 
 	_, err := sch.NewJob(

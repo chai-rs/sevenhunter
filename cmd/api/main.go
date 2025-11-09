@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/chai-rs/sevenhunter/cmd/api/config"
 	_ "github.com/chai-rs/sevenhunter/docs"
 	"github.com/chai-rs/sevenhunter/internal/router"
@@ -22,10 +20,9 @@ var (
 )
 
 func init() {
-	ctx := context.Background()
 	conf = config.Read()
 	registry = &Registry{
-		MongoDB:      conf.Mongo.MustNew(ctx),
+		MongoDB:      conf.Mongo.MustDatabase(),
 		TokenManager: conf.Auth.New(),
 	}
 }
@@ -84,7 +81,7 @@ func main() {
 
 func bindAPI(app *fiber.App) {
 	api := app.Group("/v1/api")
-	db := registry.MongoDB.Database("sevenhunter")
+	db := registry.MongoDB
 
 	// Auth
 	router.BindAuth(api, router.BindAuthOpts{

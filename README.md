@@ -10,6 +10,7 @@ The API provides:
 - User profile management (read, update, delete)
 - User listing with cursor-based pagination
 - User statistics and counting
+- Automated user count monitoring via scheduled jobs
 - Complete API documentation with Swagger
 
 ## Tech Stack
@@ -22,6 +23,7 @@ The API provides:
 - **Documentation**: Swagger/OpenAPI
 - **Logging**: Zerolog
 - **Validation**: ozzo-validation
+- **Scheduler**: gocron v2 (Cron job scheduler)
 
 ### Infrastructure
 - **Containerization**: Docker & Docker Compose
@@ -70,6 +72,7 @@ The API provides:
 │   ├── model/            # Database models
 │   ├── repo/             # Repository layer (data access)
 │   ├── router/           # Route definitions
+│   ├── scheduler/        # Scheduled jobs (user count monitoring)
 │   └── service/          # Business logic layer
 ├── pkg/
 │   ├── fiber/            # Fiber utilities
@@ -123,6 +126,9 @@ AUTH_REFRESH_TOKEN_TTL="168h"
 
 # Database Configuration
 MONGO_URI="mongodb://admin:admin@localhost:27017/"
+
+# Scheduler Configuration
+SCHEDULER_USER_COUNT="*/10 * * * * *"  # Default: every 10 seconds
 ```
 
 ### Local Development
@@ -212,6 +218,31 @@ curl -X GET http://localhost:8080/v1/api/users/profile \
 - Unit tests support with testify
 - Mock generation with mockery
 - Test configuration available
+
+## Scheduled Jobs
+
+### User Count Scheduler
+The application includes an automated scheduler that periodically logs the current user count for monitoring purposes.
+
+**Features**:
+- Runs on a configurable cron schedule (default: every 10 seconds)
+- Singleton mode to prevent concurrent executions
+- Automatic logging of user count metrics
+- Executes immediately on application startup
+
+**Configuration**:
+- Set via `SCHEDULER_USER_COUNT` environment variable
+- Uses standard cron expression format (seconds, minutes, hours, day of month, month, day of week)
+- Examples:
+  - `*/10 * * * * *` - Every 10 seconds (default)
+  - `0 * * * * *` - Every minute
+  - `0 0 * * * *` - Every hour
+  - `0 0 0 * * *` - Every day at midnight
+
+**Implementation**:
+- Built with gocron v2 scheduler
+- Located in [internal/scheduler/user_count.go](internal/scheduler/user_count.go)
+- Integrated in [cmd/api/scheduler.go](cmd/api/scheduler.go)
 
 ## Key Design Decisions
 

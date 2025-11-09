@@ -6,6 +6,6 @@ import (
 )
 
 type Registry struct {
-	MongoDB      *mongo.Client
+	MongoDB      *mongo.Database
 	TokenManager *jwt.TokenManager
 }
