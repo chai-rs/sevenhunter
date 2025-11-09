@@ -6,9 +6,10 @@ import (
 )
 
 type Config struct {
-	Mongo *mongo.Config           `required:"true"`
-	Auth  *jwt.TokenManagerConfig `required:"true"`
-	App   *AppConfig              `required:"true"`
+	Mongo     *mongo.Config           `required:"true"`
+	Auth      *jwt.TokenManagerConfig `required:"true"`
+	App       *AppConfig              `required:"true"`
+	Scheduler *SchedulerConfig        `required:"true"`
 }
 
 type AppConfig struct {
@@ -19,4 +20,8 @@ type AppConfig struct {
 
 func (c AppConfig) Address() string {
 	return ":" + c.Port
+}
+
+type SchedulerConfig struct {
+	UserCount string `env:"SCHEDULER_USER_COUNT" default:"*/10 * * * * *"`
 }

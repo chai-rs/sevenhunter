@@ -67,8 +67,16 @@ func main() {
 	bindAPI(app)
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
+	// Start schedulers
+	shutdownScheduler := startScheduler()
+
 	// Start the server
-	if err := fx.Start(app, conf.App.Address()); err != nil {
+	if err := fx.Start(app, fx.StartOpts{
+		Address: conf.App.Address(),
+		ShutdownFn: func() error {
+			return shutdownScheduler()
+		},
+	}); err != nil {
 		logx.Error().Err(err).Msg("failed to start application")
 		return
 	}

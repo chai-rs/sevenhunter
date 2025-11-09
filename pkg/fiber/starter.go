@@ -15,13 +15,28 @@ import (
 
 const DefaultAddr = ":8080"
 
-func Start(app *fiber.App, addrs ...string) error {
+var DefaultStartOpts = StartOpts{
+	Address:    DefaultAddr,
+	ShutdownFn: func() error { return nil },
+}
+
+type StartOpts struct {
+	Address    string
+	ShutdownFn func() error
+}
+
+func Start(app *fiber.App, opts ...StartOpts) error {
 	app.Use(healthcheck.New())
 	app.Use(notfound)
 
-	addr := DefaultAddr
-	if len(addrs) > 0 {
-		addr = addrs[0]
+	opt := DefaultStartOpts
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
+
+	addr := opt.Address
+	if addr == "" {
+		addr = DefaultAddr
 	}
 
 	shutdown := make(chan os.Signal, 1)
@@ -30,6 +45,10 @@ func Start(app *fiber.App, addrs ...string) error {
 	go func() {
 		<-shutdown
 		logx.Info().Msg("shutting down...")
+
+		if err := opt.ShutdownFn(); err != nil {
+			logx.Error().Err(err).Msg("shutdown error")
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
