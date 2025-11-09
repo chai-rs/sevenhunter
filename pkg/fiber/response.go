@@ -4,13 +4,15 @@ import (
 	"net/http"
 
 	errx "github.com/chai-rs/sevenhunter/pkg/error"
+	logx "github.com/chai-rs/sevenhunter/pkg/logger"
 	"github.com/gofiber/fiber/v2"
 )
 
+// Response represents the standard API response wrapper
 type Response struct {
-	Success bool   `json:"success"`
-	Message string `json:"message,omitempty"`
-	Result  any    `json:"result,omitempty"`
+	Success bool   `json:"success" example:"true"` // Indicates if the request was successful
+	Message string `json:"message,omitempty" example:"Operation completed successfully"` // Error or informational message
+	Result  any    `json:"result,omitempty"` // The actual response data
 }
 
 func Ok(c *fiber.Ctx, result ...any) error {
@@ -38,6 +40,7 @@ func Created(c *fiber.Ctx, result ...any) error {
 }
 
 func ErrorHandler(c *fiber.Ctx, err error) error {
+	logx.Error().Err(err).Msg("handling error in fiber")
 	resp := Response{
 		Success: false,
 		Message: errx.InternalServerError.Error(),

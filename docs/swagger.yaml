@@ -1,0 +1,414 @@
+basePath: /v1/api
+definitions:
+  dto.AuthResp:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserResp'
+    type: object
+  dto.CountUsersResp:
+    properties:
+      count:
+        type: integer
+    type: object
+  dto.LoginReq:
+    properties:
+      email:
+        maxLength: 200
+        minLength: 5
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.RefreshTokenReq:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.RegisterReq:
+    properties:
+      email:
+        maxLength: 200
+        minLength: 5
+        type: string
+      name:
+        maxLength: 32
+        minLength: 2
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  dto.UpdateUserReq:
+    properties:
+      email:
+        maxLength: 200
+        minLength: 5
+        type: string
+      name:
+        maxLength: 32
+        minLength: 2
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  dto.UserResp:
+    properties:
+      created_at:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  fx.Response:
+    properties:
+      message:
+        description: Error or informational message
+        example: Operation completed successfully
+        type: string
+      result:
+        description: The actual response data
+      success:
+        description: Indicates if the request was successful
+        example: true
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: tk.thanatorn@gmail.com
+    name: API Support
+  description: API for SevenHunter assignment
+  termsOfService: http://swagger.io/terms/
+  title: SevenHunter API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully authenticated
+          schema:
+            allOf:
+            - $ref: '#/definitions/fx.Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.AuthResp'
+              type: object
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      summary: User login
+      tags:
+      - Authentication
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Generate a new access token using a refresh token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New tokens generated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/fx.Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.AuthResp'
+              type: object
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "401":
+          description: Invalid or expired refresh token
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      summary: Refresh access token
+      tags:
+      - Authentication
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account with email and password
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User successfully registered
+          schema:
+            allOf:
+            - $ref: '#/definitions/fx.Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.AuthResp'
+              type: object
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      summary: Register a new user
+      tags:
+      - Authentication
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of users
+      parameters:
+      - description: Pagination cursor
+        in: query
+        name: cursor
+        type: string
+      - default: 10
+        description: Number of items per page (max 100)
+        in: query
+        name: limit
+        type: integer
+      - default: false
+        description: Sort in ascending order
+        in: query
+        name: sort_asc
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved users list
+          schema:
+            allOf:
+            - $ref: '#/definitions/fx.Response'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/dto.UserResp'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized - invalid or missing token
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      security:
+      - BearerAuth: []
+      summary: List users
+      tags:
+      - Users
+  /users/count:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the total number of registered users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved user count
+          schema:
+            allOf:
+            - $ref: '#/definitions/fx.Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.CountUsersResp'
+              type: object
+        "401":
+          description: Unauthorized - invalid or missing token
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      security:
+      - BearerAuth: []
+      summary: Get total user count
+      tags:
+      - Users
+  /users/profile:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the authenticated user's account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted user account
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "401":
+          description: Unauthorized - invalid or missing token
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete current user account
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the authenticated user's profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved user profile
+          schema:
+            allOf:
+            - $ref: '#/definitions/fx.Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.UserResp'
+              type: object
+        "401":
+          description: Unauthorized - invalid or missing token
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update the authenticated user's profile information
+      parameters:
+      - description: Updated user information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated user profile
+          schema:
+            allOf:
+            - $ref: '#/definitions/fx.Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.UserResp'
+              type: object
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "401":
+          description: Unauthorized - invalid or missing token
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/fx.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/fx.Response'
+      security:
+      - BearerAuth: []
+      summary: Update current user profile
+      tags:
+      - Users
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
