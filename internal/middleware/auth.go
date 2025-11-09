@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Auth(tm *jwt.TokenManager) fiber.Handler {
+func Auth(tm *jwt.TokenManager, userRepo model.UserRepo) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token := c.Get(fiber.HeaderAuthorization)
 		if token == "" {
@@ -42,7 +42,17 @@ func Auth(tm *jwt.TokenManager) fiber.Handler {
 			return errx.M(http.StatusUnauthorized, "invalid token type")
 		}
 
-		c.Locals("user_id", claims.Subject)
+		userID := claims.Subject
+		exist, err := userRepo.ExistsByID(c.Context(), userID)
+		if err != nil {
+			return err
+		}
+
+		if !exist {
+			return errx.M(http.StatusUnauthorized, "user not found")
+		}
+
+		c.Locals("user_id", userID)
 		return c.Next()
 	}
 }

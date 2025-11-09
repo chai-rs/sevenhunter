@@ -16,14 +16,15 @@ type BindUserOpts struct {
 }
 
 func BindUser(group fiber.Router, opts BindUserOpts) {
+	userRepo := repo.NewUserRepo(opts.DB)
 	hdl := handler.NewUserHandler(handler.UserHandlerOpts{
 		Service: service.NewUserService(service.UserServiceOpts{
-			UserRepo: repo.NewUserRepo(opts.DB),
+			UserRepo: userRepo,
 		}),
 	})
 
 	router := group.Group("/users")
-	router.Use(middleware.Auth(opts.TokenManager))
+	router.Use(middleware.Auth(opts.TokenManager, userRepo))
 	router.Get("", hdl.List)
 	router.Get("/count", hdl.Count)
 	router.Get("/profile", hdl.Get)

@@ -10,9 +10,9 @@ import (
 
 // Response represents the standard API response wrapper
 type Response struct {
-	Success bool   `json:"success" example:"true"` // Indicates if the request was successful
+	Success bool   `json:"success" example:"true"`                                       // Indicates if the request was successful
 	Message string `json:"message,omitempty" example:"Operation completed successfully"` // Error or informational message
-	Result  any    `json:"result,omitempty"` // The actual response data
+	Result  any    `json:"result,omitempty"`                                             // The actual response data
 }
 
 func Ok(c *fiber.Ctx, result ...any) error {
@@ -40,7 +40,6 @@ func Created(c *fiber.Ctx, result ...any) error {
 }
 
 func ErrorHandler(c *fiber.Ctx, err error) error {
-	logx.Error().Err(err).Msg("handling error in fiber")
 	resp := Response{
 		Success: false,
 		Message: errx.InternalServerError.Error(),
@@ -50,6 +49,8 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 	case *errx.Error:
 		if e.Code != http.StatusInternalServerError {
 			resp.Message = e.Message
+		} else {
+			logx.Error().Err(e).Msg("internal server error")
 		}
 
 		return c.Status(e.Code).JSON(resp)

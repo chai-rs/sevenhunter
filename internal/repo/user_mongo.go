@@ -142,6 +142,24 @@ func (r *UserRepo) FindByID(ctx context.Context, id string) (*model.User, error)
 	return u.toModel()
 }
 
+func (r *UserRepo) ExistsByID(ctx context.Context, id string) (bool, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return false, ErrInvalidUserID(err)
+	}
+
+	filter := bson.M{
+		"_id": objID,
+	}
+
+	count, err := r.collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return false, errx.Mongo(err)
+	}
+
+	return count > 0, nil
+}
+
 func (r *UserRepo) FindByEmail(ctx context.Context, email string) (*model.User, error) {
 	var (
 		u      userMongo
