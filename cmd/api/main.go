@@ -54,7 +54,11 @@ func main() {
 	})
 
 	// Common middlewares
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: conf.App.CorsAllowedOrigins,
+		AllowMethods: conf.App.CorsAllowedMethods,
+	}))
+
 	app.Use(fiberzerolog.New(fiberzerolog.Config{
 		Logger: lo.ToPtr(logx.ConsoleWriter()),
 	}))
@@ -64,7 +68,7 @@ func main() {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	// Start the server
-	if err := fx.Start(app); err != nil {
+	if err := fx.Start(app, conf.App.Address()); err != nil {
 		logx.Error().Err(err).Msg("failed to start application")
 		return
 	}
