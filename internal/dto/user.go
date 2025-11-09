@@ -19,7 +19,7 @@ func NewUserResp(m *model.User) *UserResp {
 
 	return &UserResp{
 		ID:        m.ID(),
-		Name:      m.Email(),
+		Name:      m.Name(),
 		Email:     m.Email(),
 		CreatedAt: m.CreatedAt().UnixMilli(),
 	}
