@@ -126,6 +126,7 @@ AUTH_REFRESH_TOKEN_TTL="168h"
 
 # Database Configuration
 MONGO_URI="mongodb://admin:admin@localhost:27017/"
+MONGO_DATABASE="sevenhunter"
 
 # Scheduler Configuration
 SCHEDULER_USER_COUNT="*/10 * * * * *"  # Default: every 10 seconds
